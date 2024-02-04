@@ -405,6 +405,7 @@ public:
 	virtual void reparent(Node *p_parent, bool p_keep_global_transform = true);
 	Node *get_parent() const;
 	Node *find_parent(const String &p_pattern) const;
+	Node *find_sibling(const String &p_pattern, bool p_recursive = false, bool p_owned = true) const;
 
 	Window *get_window() const;
 	Window *get_last_exclusive_window() const;

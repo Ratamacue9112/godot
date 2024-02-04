@@ -1794,6 +1794,13 @@ Node *Node::find_parent(const String &p_pattern) const {
 	return nullptr;
 }
 
+Node *Node::find_sibling(const String &p_pattern, bool p_recursive, bool p_owned) const {
+	if (data.parent == nullptr) {
+		return nullptr;
+	}
+	return data.parent->find_child(p_pattern, p_recursive, p_owned);
+}
+
 Window *Node::get_window() const {
 	ERR_THREAD_GUARD_V(nullptr);
 	Viewport *vp = get_viewport();
@@ -3344,6 +3351,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("find_child", "pattern", "recursive", "owned"), &Node::find_child, DEFVAL(true), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("find_children", "pattern", "type", "recursive", "owned"), &Node::find_children, DEFVAL(""), DEFVAL(true), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("find_parent", "pattern"), &Node::find_parent);
+	ClassDB::bind_method(D_METHOD("find_sibling", "pattern", "recursive", "owned"), &Node::find_sibling, DEFVAL(false), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("has_node_and_resource", "path"), &Node::has_node_and_resource);
 	ClassDB::bind_method(D_METHOD("get_node_and_resource", "path"), &Node::_get_node_and_resource);
 
