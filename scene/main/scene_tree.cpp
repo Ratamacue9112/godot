@@ -1505,6 +1505,7 @@ void SceneTree::_flush_scene_change() {
 	current_scene = pending_new_scene;
 	root->add_child(pending_new_scene);
 	pending_new_scene = nullptr;
+	possible_uninitialized_scene = false;
 	// Update display for cursor instantly.
 	root->update_mouse_cursor_state();
 }
@@ -1537,6 +1538,8 @@ Error SceneTree::change_scene_to_packed(const Ref<PackedScene> &p_scene) {
 		// Let as many side effects as possible happen or be queued now,
 		// so they are run before the scene is actually deleted.
 		root->remove_child(current_scene);
+	} else {
+		possible_uninitialized_scene = true;
 	}
 	DEV_ASSERT(!current_scene);
 
@@ -1562,7 +1565,10 @@ void SceneTree::unload_current_scene() {
 void SceneTree::add_current_scene(Node *p_current) {
 	ERR_FAIL_COND_MSG(!Thread::is_main_thread(), "Adding a current scene can only be done from the main thread.");
 	current_scene = p_current;
-	root->add_child(p_current);
+	if (!possible_uninitialized_scene) {
+		root->add_child(p_current);
+	}
+	possible_uninitialized_scene = false;
 }
 
 Ref<SceneTreeTimer> SceneTree::create_timer(double p_delay_sec, bool p_process_always, bool p_process_in_physics, bool p_ignore_time_scale) {
